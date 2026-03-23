@@ -1,24 +1,29 @@
-import os
 import platform
-import shutil
+import psutil
 
-print("=== System Info Tool ===\n")
+def get_system_info():
+    info = ""
 
-# Username
-print("User:", os.getlogin())
+    info += "=== System Information ===\n"
+    info += f"System: {platform.system()}\n"
+    info += f"Node Name: {platform.node()}\n"
 
-# OS info
-print("OS:", platform.system(), platform.release())
+    info += "\n=== CPU Info ===\n"
+    info += f"Physical cores: {psutil.cpu_count(logical=False)}\n"
+    info += f"CPU Usage: {psutil.cpu_percent(interval=1)}%\n"
 
-# Machine name
-print("Machine:", platform.node())
+    info += "\n=== Memory Info ===\n"
+    memory = psutil.virtual_memory()
+    info += f"Total: {memory.total}\n"
+    info += f"Used: {memory.used}\n"
 
-# CPU info
-print("Processor:", platform.processor())
+    return info
 
-# Disk usage
-total, used, free = shutil.disk_usage("/")
-print("\nDisk Usage:")
-print("Total:", total // (2**30), "GB")
-print("Used:", used // (2**30), "GB")
-print("Free:", free // (2**30), "GB")
+
+if __name__ == "__main__":
+    data = get_system_info()
+
+    with open("system_log.txt", "w") as file:
+        file.write(data)
+
+    print("Log saved to system_log.txt")
